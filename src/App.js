@@ -26,7 +26,7 @@ class App extends React.Component {
     start : "gg",
     end : "rr",
     eventId : "dd",
-    id:"3",
+    id:"4",
   };
   this.moveEvent = this.moveEvent.bind(this)
 }
