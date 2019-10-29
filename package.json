@@ -10,6 +10,7 @@
     "react": "16.8.6",
     "react-big-calendar": "0.20.4",
     "react-big-calendar-like-google": "0.0.3",
+    "react-datetime-picker": "^2.7.1",
     "react-dnd": "7.4.5",
     "react-dnd-html5-backend": "7.4.4",
     "react-dom": "16.8.6",

@@ -9,7 +9,7 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import "./App.css";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css';
-//import FormDialog from './events';
+import FormDialog from './Events';
 
 
 
@@ -23,10 +23,11 @@ class App extends React.Component {
     events:[],
     title :"ee",
     description :"hger",
-    start : "gg",
-    end : "rr",
+    start :"",
+    end :"",
     eventId : "dd",
     id:"4",
+    open : false,
   };
   this.moveEvent = this.moveEvent.bind(this)
 }
@@ -91,7 +92,7 @@ componentDidMount()
       })
 })
 .catch(function (error) {
-  console.log("get axios eroor"+error);
+  console.log(" axios eroor"+error);
 })
 .finally(function () {
   "wow";
@@ -99,58 +100,81 @@ componentDidMount()
 }
 
 
+
+callbackFunction = (data) => 
+  {
+    debugger;
+    this.setState({
+        title:data.title,
+        description:data.description,
+        start:data.start,
+       end:data.end,
+       
+    },()=>{console.log("callback ... "+this.state.start)})
+  }
  
     
 handleSelect = ({ start, end }) => {
   debugger;
-   var std = Math.random().toString(36).substring(7);
-   var str = std.replace(/[^a-v]+/g, '');
-   var code = 123456+str;
-  const startd = window.prompt('Event start date&time ',start)
-  const title = window.prompt('Enter Your New Event name here ')
-  const description = window.prompt('Enter Your New Event description here ')
-  const endd = window.prompt('Event end date&time ',end)
-  if (title && description && startd && endd)
-  var starts =momenttz(startd).format();
-  var ends =momenttz(endd).format();
-    this.setState({
-      events: [],
-      title :title,
-      description : description,
-      eventId :code,
-      start :starts,
-      end :ends,
-    },()=>{
-      console.log("first console val is "+this.state.starts);
-        const val = {
-          Title: this.state.title,
-          EventId:  this.state.eventId,
-          Start :this.state.start,
-          End: this.state.end,
-          Description :this.state.description
-                  };
-                  let headers = {
-                      'Content-Type': 'application/json',
-                     'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS'
-                                };
-      let url =  "http://localhost:54702/api/values";        
-      console.log("url val is  "+val.End);
-      Axios.post(url,val,{headers:headers})
-        .then(function (response) {
-          console.log("backend success response is "+response);
-          //this.load();
-          window.location.reload();
-        })
-        .catch(function (error) {
-          console.log("you got this error "+error);
-        });
-        //this.load();
-       
+  this.setState({
+    start:start,
+    end:end,
+    open:true,
     })
 }
 
 
+go = () =>
+{
+  debugger;
+  var std = Math.random().toString(36).substring(7);
+  var str = std.replace(/[^a-v]+/g, '');
+  var code = 123456+str;
+ //const startd = window.prompt('Event start date&time ',start)
+// const title = window.prompt('Enter Your New Event name here ')
+// const description = window.prompt('Enter Your New Event description here ')
+ //const endd = window.prompt('Event end date&time ',end)
+ //if (title && description && startd && endd)
+ var st = this.state.start;
+ var ed = this.state.end;
+ var starts =momenttz(this.state.start).format();
+ var ends =momenttz(this.state.end).format();
+   this.setState({
+     events: [],
+    // title :title,
+    // description : description,
+     eventId :code,
+   //  start :starts,
+     //end :ends,
+   },()=>{
+     console.log("handle select value "+this.state.start);
+       const val = {
+         Title: this.state.title,
+         EventId: this.state.eventId,
+         Start :this.state.start,
+         End:this.state.end,
+         Description :this.state.description
+                 };
+                 let headers = {
+                     'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                   'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE,PATCH,OPTIONS'
+                               };
+     let url =  "http://localhost:54702/api/values";        
+     console.log("url val is  "+val.End);
+     Axios.post(url,val,{headers:headers})
+       .then(function (response) {
+         console.log("backend success response is "+response);
+        
+        // window.location.reload();
+       })
+       .catch(function (error) {
+         console.log("you got this error "+error);
+       });
+       
+      
+   })
+} 
 
 
 eventStyleGetter = (events, start, end, isSelected) => {
@@ -169,7 +193,7 @@ eventStyleGetter = (events, start, end, isSelected) => {
    };
 }
 
-onSelectEvent(pEvent) {
+onDoubleClickEvent(pEvent) {
   debugger;
   var ide = pEvent.id;
   const message = window.confirm("Are you sure? Do you want to remove this event?")
@@ -195,6 +219,7 @@ onSelectEvent(pEvent) {
   render() {
     const {events} = this.state
     return (
+      <div>
       <div className="App">
       <header className="App-header"> 
       <h1 className="App-title"></h1>
@@ -205,13 +230,14 @@ onSelectEvent(pEvent) {
         events={events}
         eventPropGetter={(this.eventStyleGetter)}
         onEventDrop={this.moveEvent}
-        resizable
+       // resizable
         defaultView="month"
         defaultDate={new Date(Date.now())}
         draggableAccessor={event => true}
         startAccessor="start"
         endAccessor="end"
-        onSelectEvent = {event => this.onSelectEvent(event)}
+      //  onSelectEvent = {event => alert("event start date is "+event.start+", event end date is "+event.end) }
+        onDoubleClickEvent  = {event => this.onDoubleClickEvent(event)}
         onSelectSlot={this.handleSelect}
         onDragStart={event=>console.log("ondragstart event is "+event)}
         style={{ height: "600px"}}
@@ -236,6 +262,10 @@ onSelectEvent(pEvent) {
         }}
       /> 
       </div>
+      <div>
+      < FormDialog val ={this.state.open} st ={this.state.start} ed={this.state.end} parentCallback = {this.callbackFunction} parentMethod={this.go}/>
+      </div>
+       </div>
     );
   }
 }
